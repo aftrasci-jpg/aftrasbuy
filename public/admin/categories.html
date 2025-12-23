@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AFTRAS-Buy - Gestion Catégories</title>
+    <link rel="stylesheet" href="../css/style.css?v=2.1&t=1734740597">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Cache-Control" content="max-age=0">
+    <script>
+        // Force cache refresh
+        if (window.location.href.indexOf('?refresh=') === -1) {
+            window.location.href = window.location.href + '?refresh=' + Date.now();
+        }
+    </script>
+</head>
+<body>
+    <header class="admin-header">
+        <h1>Gestion des Catégories</h1>
+        <div class="admin-nav">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="products.html">Produits</a>
+            <a href="categories.html" class="active">Catégories</a>
+            <a href="agents.html">Agents</a>
+            <button id="logoutBtn">Déconnexion</button>
+        </div>
+    </header>
+
+    <main class="admin-main">
+        <div class="actions-bar">
+            <button id="addCategoryBtn" class="btn-primary">+ Nouvelle Catégorie</button>
+            <input type="text" id="searchInput" placeholder="Rechercher catégories...">
+        </div>
+
+        <div id="categoriesTable" class="data-table">
+            <!-- Categories table will be loaded here -->
+        </div>
+
+        <!-- Add/Edit Category Modal -->
+        <div id="categoryModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">Nouvelle Catégorie</h3>
+                    <span class="modal-close">&times;</span>
+                </div>
+                <form id="categoryForm">
+                    <div class="form-group">
+                        <label for="categoryName">Nom de la catégorie *</label>
+                        <input type="text" id="categoryName" required placeholder="Ex: Électronique, Mobilier, Vêtements...">
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" id="cancelBtn" class="btn-secondary">Annuler</button>
+                        <button type="submit" class="btn-primary">Enregistrer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <style>
+        .actions-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            align-items: center;
+        }
+
+        #searchInput {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            flex: 1;
+            max-width: 300px;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .data-table {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .table-header {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-bottom: 1px solid #dee2e6;
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr 120px;
+            gap: 1rem;
+            font-weight: bold;
+        }
+
+        .table-row {
+            padding: 1rem;
+            border-bottom: 1px solid #dee2e6;
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr 120px;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .category-image {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .category-name {
+            font-weight: 500;
+        }
+
+        .category-description {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-edit {
+            background: #ffc107;
+            color: #212529;
+            border: none;
+            padding: 0.375rem 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.375rem 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        /* Modal styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-close {
+            font-size: 2rem;
+            cursor: pointer;
+            color: #6c757d;
+        }
+
+        .modal-close:hover {
+            color: #000;
+        }
+
+        #categoryForm {
+            padding: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+
+        .upload-section {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            background: #f8f9fa;
+        }
+
+        .selected-files {
+            margin-top: 1rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background: white;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            border: 1px solid #eee;
+        }
+
+        .file-preview {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .file-info {
+            flex: 1;
+            text-align: left;
+        }
+
+        .file-name {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .file-size {
+            color: #666;
+            font-size: 0.8rem;
+        }
+
+        .file-remove {
+            color: #dc3545;
+            cursor: pointer;
+            font-weight: bold;
+            padding: 0.25rem;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .table-header,
+            .table-row {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .table-row {
+                text-align: center;
+            }
+        }
+    </style>
+
+    <script src="../js/admin.js"></script>
+    <script>
+        let categories = [];
+        let editingCategory = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!AdminAuth.isAuthenticated()) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            await loadCategories();
+
+            setupEventListeners();
+        });
+
+        async function loadCategories() {
+            try {
+                const response = await fetch('/api/categories');
+                categories = await response.json();
+                displayCategories(categories);
+            } catch (error) {
+                console.error('Error loading categories:', error);
+            }
+        }
+
+        function displayCategories(categoriesToShow) {
+            const container = document.getElementById('categoriesTable');
+            container.innerHTML = '';
+
+            if (categoriesToShow.length === 0) {
+                container.innerHTML = '<div style="padding: 2rem; text-align: center; color: #666;">Aucune catégorie trouvée</div>';
+                return;
+            }
+
+            // Header
+            const header = document.createElement('div');
+            header.className = 'table-header';
+            header.innerHTML = `
+                <div>ID</div>
+                <div>Catégorie</div>
+                <div>Description</div>
+                <div>Actions</div>
+            `;
+            container.appendChild(header);
+
+            // Rows
+            categoriesToShow.forEach(category => {
+                const row = document.createElement('div');
+                row.className = 'table-row';
+                row.innerHTML = `
+                    <div class="category-id">${category.id ? category.id.substring(0, 8) + '...' : 'N/A'}</div>
+                    <div>
+                        <div class="category-name">${category.name}</div>
+                    </div>
+                    <div class="category-description">${category.description || 'Aucune description'}</div>
+                    <div class="table-actions">
+                        <button class="btn-edit" onclick="editCategory('${category.id}')">Modifier</button>
+                        <button class="btn-delete" onclick="deleteCategory('${category.id}')">Supprimer</button>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function setupEventListeners() {
+            document.getElementById('addCategoryBtn').addEventListener('click', () => openModal());
+            document.getElementById('cancelBtn').addEventListener('click', () => closeModal());
+            document.querySelector('.modal-close').addEventListener('click', () => closeModal());
+            document.getElementById('categoryForm').addEventListener('submit', handleFormSubmit);
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                AdminAuth.logout();
+                window.location.href = 'login.html';
+            });
+
+            // Search
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                const filtered = categories.filter(category =>
+                    category.name.toLowerCase().includes(searchTerm)
+                );
+                displayCategories(filtered);
+            });
+        }
+
+        function openModal(category = null) {
+            editingCategory = category;
+            document.getElementById('modalTitle').textContent = category ? 'Modifier Catégorie' : 'Nouvelle Catégorie';
+
+            if (category) {
+                document.getElementById('categoryName').value = category.name || '';
+            } else {
+                document.getElementById('categoryForm').reset();
+            }
+
+            document.getElementById('categoryModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('categoryModal').style.display = 'none';
+            editingCategory = null;
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+
+            const formData = {
+                name: document.getElementById('categoryName').value
+            };
+
+            try {
+                let response;
+                if (editingCategory) {
+                    response = await AdminAuth.authenticatedFetch(`/api/admin/categories/${editingCategory.id}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(formData)
+                    });
+                } else {
+                    response = await AdminAuth.authenticatedFetch('/api/admin/categories', {
+                        method: 'POST',
+                        body: JSON.stringify(formData)
+                    });
+                }
+
+                if (response.ok) {
+                    closeModal();
+                    await loadCategories();
+                    alert(editingCategory ? 'Catégorie modifiée !' : 'Catégorie créée !');
+                } else {
+                    const error = await response.json();
+                    alert('Erreur: ' + error.message);
+                }
+            } catch (error) {
+                alert('Erreur: ' + error.message);
+            }
+        }
+
+        function editCategory(categoryId) {
+            const category = categories.find(c => c.id === categoryId);
+            if (category) {
+                openModal(category);
+            }
+        }
+
+        async function deleteCategory(categoryId) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?')) return;
+
+            try {
+                const response = await AdminAuth.authenticatedFetch(`/api/admin/categories/${categoryId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    await loadCategories();
+                    alert('Catégorie supprimée !');
+                } else {
+                    const error = await response.json();
+                    alert('Erreur: ' + error.message);
+                }
+            } catch (error) {
+                alert('Erreur: ' + error.message);
+            }
+        }
+
+
+    </script>
+</body>
+</html>

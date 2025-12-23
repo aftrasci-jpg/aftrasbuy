@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AFTRAS-Buy - Gestion Agents</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <header class="admin-header">
+        <h1>Gestion des Agents Commerciaux</h1>
+        <div class="admin-nav">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="products.html">Produits</a>
+            <a href="categories.html">Catégories</a>
+            <button id="logoutBtn">Déconnexion</button>
+        </div>
+    </header>
+
+    <main class="admin-main">
+        <div class="actions-bar">
+            <button id="addAgentBtn" class="btn-modern">
+                <span class="btn-icon">👥</span>
+                <span class="btn-text">Nouvel Agent Commercial</span>
+                <span class="btn-plus">+</span>
+            </button>
+        </div>
+
+        <div id="agentsTable" class="data-table">
+            <!-- Agents will be loaded here -->
+        </div>
+    </main>
+
+    <!-- Add/Edit Agent Modal -->
+    <div id="agentModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="agentModalTitle">Nouvel Agent Commercial</h3>
+                <span class="modal-close">&times;</span>
+            </div>
+            <form id="agentForm">
+                <div class="form-group">
+                    <label for="agentName">Nom complet *</label>
+                    <input type="text" id="agentName" required placeholder="Ex: Jean Dupont">
+                </div>
+
+                <div class="form-group">
+                    <label for="agentWhatsapp">Numéro WhatsApp *</label>
+                    <input type="tel" id="agentWhatsapp" required placeholder="+22501020304">
+                    <small class="form-help">Format: +225XXXXXXXXX</small>
+                </div>
+
+                <div class="form-group" id="slugPreview" style="display: none;">
+                    <label>Lien d'invitation généré :</label>
+                    <div class="link-preview">
+                        <input type="text" id="invitationLink" readonly>
+                        <button type="button" id="copyLinkBtn" class="btn-secondary">📋 Copier</button>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" id="cancelAgentBtn" class="btn-secondary">Annuler</button>
+                    <button type="submit" class="btn-primary">Créer Agent</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- WhatsApp Invitation Modal -->
+    <div id="whatsappModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📱 Envoyer l'invitation WhatsApp</h3>
+                <span class="modal-close">&times;</span>
+            </div>
+            <div id="whatsappContent">
+                <div class="invitation-preview">
+                    <h4>Message qui sera envoyé :</h4>
+                    <div class="message-preview">
+                        <div class="whatsapp-message">
+                            <p id="whatsappMessage"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="whatsapp-actions">
+                    <button type="button" id="sendWhatsappBtn" class="btn-primary">
+                        📱 Envoyer sur WhatsApp
+                    </button>
+                    <button type="button" id="skipWhatsappBtn" class="btn-secondary">
+                        Plus tard
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .actions-bar {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Bouton moderne */
+        .btn-modern {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-modern::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-modern:hover::before {
+            left: 100%;
+        }
+
+        .btn-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-modern:active {
+            transform: translateY(0);
+        }
+
+        .btn-icon {
+            font-size: 1.2rem;
+            animation: bounce 2s infinite;
+        }
+
+        .btn-text {
+            font-weight: 600;
+        }
+
+        .btn-plus {
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-modern:hover .btn-plus {
+            transform: rotate(90deg);
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-3px);
+            }
+            60% {
+                transform: translateY(-2px);
+            }
+        }
+
+        /* Modal amélioré */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal[style*="display: flex"] {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.7);
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+
+        .modal[style*="display: flex"] .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 2rem 2rem 1rem;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            font-size: 2rem;
+            color: #6c757d;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .modal-close:hover {
+            color: #dc3545;
+            background: rgba(220, 53, 69, 0.1);
+        }
+
+        /* Formulaire amélioré */
+        #agentForm {
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: white;
+        }
+
+        .form-group input::placeholder {
+            color: #adb5bd;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            padding-top: 1rem;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .form-actions button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #6c757d;
+            border: 2px solid #e9ecef;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+            transform: translateY(-1px);
+        }
+
+        .data-table {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .table-header {
+            display: grid;
+            grid-template-columns: 2fr 2fr 1fr 1fr 2fr;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 2fr 2fr 1fr 1fr 2fr;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #f1f3f4;
+            align-items: center;
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .table-row:hover {
+            background: #f8f9fa;
+        }
+
+        .agent-name {
+            font-weight: 600;
+            color: #007bff;
+        }
+
+        .agent-whatsapp {
+            color: #28a745;
+            font-weight: 500;
+        }
+
+        .agent-active {
+            background: #d4edda;
+            color: #155724;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .agent-inactive {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-edit, .btn-delete, .btn-whatsapp {
+            padding: 0.375rem 0.75rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-edit {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-whatsapp {
+            background: #25d366;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #e0a800;
+        }
+
+        .btn-delete:hover {
+            background: #c82333;
+        }
+
+        .btn-whatsapp:hover {
+            background: #128c7e;
+        }
+
+        .modal-content {
+            max-width: 500px;
+        }
+
+        .form-help {
+            color: #6c757d;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .link-preview {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .link-preview input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            background: #f8f9fa;
+            font-family: monospace;
+            font-size: 0.875rem;
+        }
+
+        .invitation-preview {
+            margin-bottom: 2rem;
+        }
+
+        .message-preview {
+            background: #e3f2fd;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .whatsapp-message {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .whatsapp-message p {
+            margin: 0;
+            line-height: 1.5;
+            white-space: pre-line;
+        }
+
+        .whatsapp-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .whatsapp-actions button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .table-header,
+            .table-row {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .table-header {
+                display: none;
+            }
+
+            .table-row {
+                border: 1px solid #dee2e6;
+                border-radius: 8px;
+                margin-bottom: 1rem;
+                padding: 1rem;
+            }
+
+            .whatsapp-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/admin.js"></script>
+    <script>
+        let agents = [];
+        let editingAgent = null;
+        let newAgentData = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!AdminAuth.isAuthenticated()) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            await loadAgents();
+            setupAgentEventListeners();
+        });
+
+        async function loadAgents() {
+            try {
+                const response = await AdminAuth.authenticatedFetch('/api/admin/agents');
+                agents = await response.json();
+                displayAgents(agents);
+            } catch (error) {
+                console.error('Error loading agents:', error);
+                showError('Erreur lors du chargement des agents');
+            }
+        }
+
+        function displayAgents(agentsList) {
+            const container = document.getElementById('agentsTable');
+            container.innerHTML = '';
+
+            if (agentsList.length === 0) {
+                container.innerHTML = '<div style="padding: 3rem; text-align: center; color: #666;">Aucun agent trouvé</div>';
+                return;
+            }
+
+            // Header
+            const header = document.createElement('div');
+            header.className = 'table-header';
+            header.innerHTML = `
+                <div>Nom</div>
+                <div>WhatsApp</div>
+                <div>Statut</div>
+                <div>Lien</div>
+                <div>Actions</div>
+            `;
+            container.appendChild(header);
+
+            // Rows
+            agentsList.forEach(agent => {
+                const row = document.createElement('div');
+                row.className = 'table-row';
+                row.innerHTML = `
+                    <div class="agent-name">${agent.name}</div>
+                    <div class="agent-whatsapp">${agent.whatsapp_number}</div>
+                    <div><span class="${agent.is_active ? 'agent-active' : 'agent-inactive'}">${agent.is_active ? 'Actif' : 'Inactif'}</span></div>
+                    <div><button class="btn-whatsapp" onclick="copyInvitationLink('${agent.slug}')">📋 Copier</button></div>
+                    <div class="table-actions">
+                        <button class="btn-edit" onclick="editAgent('${agent.id}')">Modifier</button>
+                        <button class="btn-whatsapp-invite" onclick="sendWhatsappToAgent('${agent.id}')">📱 Inviter</button>
+                        <button class="btn-delete" onclick="deleteAgent('${agent.id}')">Supprimer</button>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function setupAgentEventListeners() {
+            document.getElementById('addAgentBtn').addEventListener('click', () => openAgentModal());
+            document.getElementById('cancelAgentBtn').addEventListener('click', () => closeAgentModal());
+            document.querySelector('#agentModal .modal-close').addEventListener('click', () => closeAgentModal());
+            document.querySelector('#whatsappModal .modal-close').addEventListener('click', () => closeWhatsappModal());
+            document.getElementById('agentForm').addEventListener('submit', handleAgentFormSubmit);
+            document.getElementById('copyLinkBtn').addEventListener('click', () => copyInvitationLink());
+            document.getElementById('sendWhatsappBtn').addEventListener('click', sendWhatsappInvitation);
+            document.getElementById('skipWhatsappBtn').addEventListener('click', closeWhatsappModal);
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                AdminAuth.logout();
+                window.location.href = 'login.html';
+            });
+
+            // Auto-generate slug preview
+            document.getElementById('agentName').addEventListener('input', updateSlugPreview);
+        }
+
+        function updateSlugPreview() {
+            const name = document.getElementById('agentName').value;
+            if (name.length > 0) {
+                const slug = generateSlug(name);
+                const fullUrl = `${window.location.origin}/?agent=${slug}`;
+                document.getElementById('invitationLink').value = fullUrl;
+                document.getElementById('slugPreview').style.display = 'block';
+            } else {
+                document.getElementById('slugPreview').style.display = 'none';
+            }
+        }
+
+        function generateSlug(name) {
+            return name
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^a-z0-9\s-]/g, '')
+                .trim()
+                .replace(/\s+/g, '-')
+                .replace(/-+/g, '-');
+        }
+
+        function openAgentModal(agent = null) {
+            editingAgent = agent;
+            document.getElementById('agentModalTitle').textContent = agent ? 'Modifier Agent' : 'Nouvel Agent Commercial';
+
+            if (agent) {
+                document.getElementById('agentName').value = agent.name || '';
+                document.getElementById('agentWhatsapp').value = agent.whatsapp_number || '';
+                updateSlugPreview();
+            } else {
+                document.getElementById('agentForm').reset();
+                document.getElementById('slugPreview').style.display = 'none';
+            }
+
+            document.getElementById('agentModal').style.display = 'flex';
+        }
+
+        function closeAgentModal() {
+            document.getElementById('agentModal').style.display = 'none';
+            editingAgent = null;
+            newAgentData = null;
+        }
+
+        function closeWhatsappModal() {
+            document.getElementById('whatsappModal').style.display = 'none';
+        }
+
+        async function handleAgentFormSubmit(e) {
+            e.preventDefault();
+
+            const formData = {
+                name: document.getElementById('agentName').value.trim(),
+                whatsapp_number: document.getElementById('agentWhatsapp').value.trim(),
+                slug: generateSlug(document.getElementById('agentName').value.trim()),
+                is_active: true
+            };
+
+            // Validate WhatsApp number
+            if (!formData.whatsapp_number.match(/^\+225\d{8,}$/)) {
+                alert('Le numéro WhatsApp doit être au format +225XXXXXXXXX');
+                return;
+            }
+
+            try {
+                let response;
+                if (editingAgent) {
+                    response = await AdminAuth.authenticatedFetch(`/api/admin/agents/${editingAgent.id}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(formData)
+                    });
+                } else {
+                    response = await AdminAuth.authenticatedFetch('/api/admin/agents', {
+                        method: 'POST',
+                        body: JSON.stringify(formData)
+                    });
+                }
+
+                if (response.ok) {
+                    const result = await response.json();
+                    closeAgentModal();
+                    await loadAgents();
+
+                    if (!editingAgent) {
+                        // New agent created - show WhatsApp invitation
+                        newAgentData = result;
+                        showWhatsappInvitation(result);
+                    } else {
+                        alert('Agent modifié avec succès !');
+                    }
+                } else {
+                    const error = await response.json();
+                    alert('Erreur: ' + error.message);
+                }
+            } catch (error) {
+                alert('Erreur: ' + error.message);
+            }
+        }
+
+        function showWhatsappInvitation(agent) {
+            const message = `Bonjour ${agent.name} !
+
+Vous êtes maintenant agent commercial pour notre catalogue de produits.
+
+Votre lien d'invitation personnel :
+${window.location.origin}/?agent=${agent.slug}
+
+Partagez ce lien à vos contacts et gagnez des commissions sur chaque vente !
+
+Pour commencer, visitez votre lien et explorez notre catalogue.`;
+
+            document.getElementById('whatsappMessage').textContent = message;
+            document.getElementById('whatsappModal').style.display = 'flex';
+        }
+
+        async function sendWhatsappInvitation() {
+            if (!newAgentData) return;
+
+            const message = document.getElementById('whatsappMessage').textContent;
+            const whatsappUrl = `https://wa.me/${newAgentData.whatsapp_number.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
+
+            window.open(whatsappUrl, '_blank');
+            closeWhatsappModal();
+
+            alert('Invitation WhatsApp ouverte ! Envoyez le message à votre nouvel agent.');
+            newAgentData = null;
+        }
+
+        function copyInvitationLink(slug = null) {
+            const linkToCopy = slug
+                ? `${window.location.origin}/?agent=${slug}`
+                : document.getElementById('invitationLink').value;
+
+            navigator.clipboard.writeText(linkToCopy).then(() => {
+                alert('Lien d\'invitation copié dans le presse-papiers !');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = linkToCopy;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                alert('Lien d\'invitation copié dans le presse-papiers !');
+            });
+        }
+
+        function editAgent(agentId) {
+            const agent = agents.find(a => a.id === agentId);
+            if (agent) {
+                openAgentModal(agent);
+            }
+        }
+
+        async function deleteAgent(agentId) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer cet agent ? Cette action est irréversible.')) return;
+
+            try {
+                const response = await AdminAuth.authenticatedFetch(`/api/admin/agents/${agentId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    await loadAgents();
+                    alert('Agent supprimé avec succès !');
+                } else {
+                    const error = await response.json();
+                    alert('Erreur: ' + error.message);
+                }
+            } catch (error) {
+                alert('Erreur: ' + error.message);
+            }
+        }
+
+        function showError(message) {
+            const container = document.getElementById('agentsTable');
+            container.innerHTML = `<div style="padding: 2rem; text-align: center; color: #dc3545;">${message}</div>`;
+        }
+    </script>
+</body>
+</html>

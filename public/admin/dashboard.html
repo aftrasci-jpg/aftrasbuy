@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AFTRAS-Buy - Dashboard Admin</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <header class="admin-header">
+        <div class="header-content">
+            <div class="admin-brand">
+                <h1>AFTRAS Admin</h1>
+            </div>
+            <div class="admin-status">
+                <span class="status-dot"></span>
+                <span>Système actif</span>
+            </div>
+            <div class="admin-nav">
+                <a href="products.html" class="nav-item">
+                    <span>📦</span>
+                    Produits
+                </a>
+                <a href="categories.html" class="nav-item">
+                    <span>🏷️</span>
+                    Catégories
+                </a>
+                <a href="agents.html" class="nav-item">
+                    <span>👥</span>
+                    Agents
+                </a>
+                <button id="changePasswordBtn" class="nav-item">
+                    <span>🔐</span>
+                    Mot de passe
+                </button>
+                <button id="logoutBtn">
+                    <span>🚪</span>
+                    Déconnexion
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="sidebar-section">
+                <h3>📊 Vue d'ensemble</h3>
+                <ul class="sidebar-menu">
+                    <li><a href="dashboard.html" class="active"><span>🏠</span> Dashboard</a></li>
+                    <li><a href="products.html"><span>📦</span> Produits</a></li>
+                    <li><a href="categories.html"><span>🏷️</span> Catégories</a></li>
+                    <li><a href="agents.html"><span>👥</span> Agents</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>⚙️ Outils</h3>
+                <ul class="sidebar-menu">
+                    <li><a href="#" onclick="testWhatsApp()"><span>📱</span> Test WhatsApp</a></li>
+                    <li><a href="../pwa-test.html"><span>🔧</span> Test PWA</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-stats">
+                <div class="stat-number" id="sidebarProducts">-</div>
+                <div class="stat-label">Produits actifs</div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <!-- Welcome Section -->
+            <div class="welcome-section">
+                <h1>👋 Bienvenue sur votre Dashboard</h1>
+                <p>Gérez efficacement votre catalogue AFTRAS-Buy</p>
+            </div>
+
+            <!-- Stats Grid -->
+            <section class="stats-section">
+                <div class="section-header">
+                    <h2>📈 Statistiques</h2>
+                    <span class="section-subtitle">Vue d'ensemble de votre activité</span>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📦</div>
+                        <h3>Produits actifs</h3>
+                        <div id="productsCount" class="stat-number">-</div>
+                        <div class="stat-change">+12% ce mois</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🏷️</div>
+                        <h3>Catégories</h3>
+                        <div id="categoriesCount" class="stat-number">-</div>
+                        <div class="stat-change">3 nouvelles</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <h3>Agents</h3>
+                        <div id="agentsCount" class="stat-number">-</div>
+                        <div class="stat-change">Actifs</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📈</div>
+                        <h3>Commandes du jour</h3>
+                        <div id="ordersToday" class="stat-number">0</div>
+                        <div class="stat-change">En attente</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quick Actions -->
+            <section class="quick-actions">
+                <div class="section-header">
+                    <h2>⚡ Actions rapides</h2>
+                    <span class="section-subtitle">Accès rapide aux tâches courantes</span>
+                </div>
+                <div class="actions-grid">
+                    <a href="products.html" class="action-card">
+                        <div class="action-icon">➕</div>
+                        <h3>Nouveau produit</h3>
+                        <p>Ajouter un produit au catalogue</p>
+                    </a>
+                    <a href="categories.html" class="action-card">
+                        <div class="action-icon">🏷️</div>
+                        <h3>Nouvelle catégorie</h3>
+                        <p>Créer une catégorie</p>
+                    </a>
+                    <a href="agents.html" class="action-card">
+                        <div class="action-icon">👤</div>
+                        <h3>Nouvel agent</h3>
+                        <p>Ajouter un agent commercial</p>
+                    </a>
+                    <div class="action-card" onclick="testWhatsApp()">
+                        <div class="action-icon">📱</div>
+                        <h3>Tester WhatsApp</h3>
+                        <p>Vérifier la configuration</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Site Settings -->
+            <section class="site-settings">
+                <div class="section-header">
+                    <h2>⚙️ Paramètres du Site</h2>
+                    <span class="section-subtitle">Configuration et personnalisation</span>
+                </div>
+                <div class="settings-grid">
+                    <div class="setting-card">
+                        <h3><span>🎨</span> Logo du Site</h3>
+                        <div id="currentLogo" class="logo-preview">
+                            <!-- Logo actuel sera chargé ici -->
+                        </div>
+                        <button id="changeLogoBtn" class="btn-primary">
+                            <span>📤</span>
+                            Changer le Logo
+                        </button>
+                        <input type="file" id="logoInput" accept="image/*" style="display: none;">
+                    </div>
+                    <div class="setting-card">
+                        <h3><span>📱</span> Numéro WhatsApp du Site</h3>
+                        <div class="whatsapp-info">
+                            <div class="info-item">
+                                <strong>Numéro actuel:</strong>
+                                <span id="whatsappDisplay">Chargement...</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Statut:</strong> <span class="status-active">✅ Actif</span>
+                            </div>
+                        </div>
+                        <button id="editWhatsappBtn" class="btn-primary" style="margin-top: 1rem;">
+                            <span>✏️</span>
+                            Modifier le numéro
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recent Activity -->
+            <section class="recent-activity">
+                <div class="activity-header">
+                    <h2>📋 Activité récente</h2>
+                </div>
+                <div id="recentActivity" class="activity-list">
+                    <!-- Recent activity will be loaded here -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Password Change Modal -->
+    <div id="passwordModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Changer le mot de passe</h3>
+                <span class="modal-close">&times;</span>
+            </div>
+            <form id="passwordForm">
+                <div class="form-group">
+                    <label for="currentPassword">Mot de passe actuel *</label>
+                    <input type="password" id="currentPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">Nouveau mot de passe *</label>
+                    <input type="password" id="newPassword" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirmer le nouveau mot de passe *</label>
+                    <input type="password" id="confirmPassword" required minlength="6">
+                </div>
+                <div class="form-actions">
+                    <button type="button" id="cancelPasswordBtn" class="btn-secondary">Annuler</button>
+                    <button type="submit" class="btn-primary">Changer le mot de passe</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- WhatsApp Edit Modal -->
+    <div id="whatsappModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📱 Modifier le numéro WhatsApp du site</h3>
+                <span class="modal-close" id="closeWhatsappModal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="siteWhatsappCountry">Pays du numéro WhatsApp</label>
+                    <select id="siteWhatsappCountry">
+                        <option value="Côte d'Ivoire">🇨🇮 Côte d'Ivoire (+225)</option>
+                        <option value="Sénégal">🇸🇳 Sénégal (+221)</option>
+                        <option value="Mali">🇲🇱 Mali (+223)</option>
+                        <option value="Burkina Faso">🇧🇫 Burkina Faso (+226)</option>
+                        <option value="Niger">🇳🇪 Niger (+227)</option>
+                        <option value="Togo">🇹🇬 Togo (+228)</option>
+                        <option value="Bénin">🇧🇯 Bénin (+229)</option>
+                        <option value="Ghana">🇬🇭 Ghana (+233)</option>
+                        <option value="Guinée">🇬🇳 Guinée (+224)</option>
+                        <option value="France">🇫🇷 France (+33)</option>
+                        <option value="USA">🇺🇸 États-Unis (+1)</option>
+                        <option value="Canada">🇨🇦 Canada (+1)</option>
+                        <option value="Royaume-Uni">🇬🇧 Royaume-Uni (+44)</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="siteWhatsappCode">Indicatif</label>
+                        <input type="text" id="siteWhatsappCode" readonly placeholder="+225" style="background: #f8f9fa; cursor: not-allowed;">
+                    </div>
+                    <div class="form-group">
+                        <label for="siteWhatsappNumber">Numéro local</label>
+                        <input type="tel" id="siteWhatsappNumber" placeholder="0102030405" maxlength="15">
+                        <small id="siteWhatsappHelp" style="color: #666; font-size: 0.8rem;">Exemple: 0102030405 (10 chiffres)</small>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="form-actions">
+                    <button type="button" id="cancelWhatsappBtn" class="btn-secondary">Annuler</button>
+                    <button type="button" id="saveWhatsappBtn" class="btn-primary">
+                        <span>💾</span>
+                        Sauvegarder
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <style>
+        /* Import Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --primary-color: #F28C28;
+            --secondary-color: #004D40;
+            --accent-color: #E67E22;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+            --light-bg: #f8f9fa;
+            --dark-bg: #1a1a1a;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 20px rgba(0,0,0,0.15);
+            --shadow-lg: 0 8px 40px rgba(0,0,0,0.2);
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* Modern Header */
+        .admin-header {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            color: white;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-lg);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .admin-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.03"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.03"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.02"/><circle cx="90" cy="40" r="0.5" fill="white" opacity="0.02"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            pointer-events: none;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .admin-brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .admin-brand h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+            background: linear-gradient(135deg, #ffffff 0%, rgba(255,255,255,0.8) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .admin-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255,255,255,0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            font-size: 0.9rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success-color);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .admin-nav {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .nav-item {
+            color: white;
+            text-decoration: none;
+            padding: 0.75rem 1.25rem;
+            border-radius: 12px;
+            transition: var(--transition);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .nav-item:hover::before {
+            left: 100%;
+        }
+
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .nav-item.active {
+            background: rgba(255,255,255,0.15);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        #logoutBtn {
+            background: linear-gradient(135deg, var(--danger-color) 0%, #c82333 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.25rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        #logoutBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(220, 53, 69, 0.4);
+            background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
+        }
+
+        /* Main Layout */
+        .admin-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: calc(100vh - 80px);
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Sidebar */
+        .admin-sidebar {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(255,255,255,0.2);
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+        }
+
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-section h3 {
+            color: var(--secondary-color);
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 0.25rem;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #666;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .sidebar-menu a:hover {
+            background: linear-gradient(135deg, rgba(242, 140, 40, 0.1) 0%, rgba(0, 77, 64, 0.1) 100%);
+            color: var(--secondary-color);
+            transform: translateX(4px);
+        }
+
+        .sidebar-menu a.active {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(242, 140, 40, 0.3);
+        }
+
+        .sidebar-stats {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, rgba(0, 77, 64, 0.8) 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .sidebar-stats .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-stats .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Main Content */
+        .admin-main {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+            border: 1px solid rgba(255,255,255,0.8);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 1rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(242, 140, 40, 0.3);
+        }
+
+        .stat-card h3 {
+            color: #666;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+        }
+
+        .stat-change {
+            font-size: 0.8rem;
+            color: var(--success-color);
+            font-weight: 500;
+        }
+
+        .stat-change.negative {
+            color: var(--danger-color);
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            margin-bottom: 3rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-header h2 {
+            color: var(--secondary-color);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .action-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
+            text-decoration: none;
+            color: inherit;
+            transition: var(--transition);
+            border: 1px solid rgba(255,255,255,0.8);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .action-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(135deg, rgba(242, 140, 40, 0.1) 0%, rgba(0, 77, 64, 0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            border-radius: 50%;
+        }
+
+        .action-card:hover::before {
+            opacity: 1;
+        }
+
+        .action-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-color);
+        }
+
+        .action-icon {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 1rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, var(--secondary-color) 0%, rgba(0, 77, 64, 0.8) 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 77, 64, 0.3);
+        }
+
+        .action-card h3 {
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .action-card p {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        /* Settings Grid */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .setting-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(255,255,255,0.8);
+            transition: var(--transition);
+        }
+
+        .setting-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .setting-card h3 {
+            color: var(--secondary-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-preview {
+            border: 2px dashed #e9ecef;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            transition: var(--transition);
+        }
+
+        .logo-preview:hover {
+            border-color: var(--primary-color);
+            background: linear-gradient(135deg, rgba(242, 140, 40, 0.05) 0%, rgba(255,255,255,1) 100%);
+        }
+
+        .logo-preview img {
+            max-width: 100%;
+            max-height: 80px;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(242, 140, 40, 0.4);
+        }
+
+        /* Activity Feed */
+        .recent-activity {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(255,255,255,0.8);
+            overflow: hidden;
+        }
+
+        .activity-header {
+            padding: 2rem 2rem 1rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .activity-header h2 {
+            color: var(--secondary-color);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .activity-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #f8f9fa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .activity-item:hover {
+            background: linear-gradient(135deg, rgba(242, 140, 40, 0.02) 0%, rgba(0, 77, 64, 0.02) 100%);
+            transform: translateX(4px);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .activity-text {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .activity-time {
+            color: #666;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .stat-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .stat-card:nth-child(2) { animation-delay: 0.1s; }
+        .stat-card:nth-child(3) { animation-delay: 0.2s; }
+        .stat-card:nth-child(4) { animation-delay: 0.3s; }
+
+        .action-card {
+            animation: slideIn 0.6s ease-out;
+        }
+
+        .action-card:nth-child(2) { animation-delay: 0.1s; }
+        .action-card:nth-child(3) { animation-delay: 0.2s; }
+        .action-card:nth-child(4) { animation-delay: 0.3s; }
+
+        /* Modal Improvements */
+        .modal-content {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+            color: white;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .modal-close {
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            background: rgba(255,255,255,0.2);
+            transform: rotate(90deg);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .admin-header {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .admin-header h1 {
+                font-size: 1.5rem;
+                text-align: center;
+            }
+
+            .admin-nav {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.5rem;
+            }
+
+            .admin-nav a, #logoutBtn, #changePasswordBtn {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.9rem;
+            }
+
+            .admin-main {
+                padding: 1rem;
+            }
+
+            .stats-grid, .actions-grid, .settings-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .stat-card {
+                padding: 1.5rem;
+            }
+
+            .stat-number {
+                font-size: 2.5rem;
+            }
+
+            .action-card {
+                padding: 1.5rem;
+            }
+
+            .setting-card {
+                padding: 1.5rem;
+            }
+
+            .logo-preview {
+                min-height: 60px;
+                padding: 0.75rem;
+            }
+
+            .activity-list {
+                max-height: 300px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .admin-header {
+                padding: 0.75rem;
+            }
+
+            .admin-nav {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .admin-nav a, #logoutBtn, #changePasswordBtn {
+                width: 100%;
+                text-align: center;
+                padding: 0.75rem;
+            }
+
+            .stat-card {
+                padding: 1rem;
+            }
+
+            .stat-number {
+                font-size: 2rem;
+            }
+
+            .action-card, .setting-card {
+                padding: 1rem;
+            }
+
+            .modal-content {
+                margin: 0.5rem;
+                width: calc(100% - 1rem);
+            }
+
+            .form-group input,
+            .form-group select {
+                font-size: 16px; /* Prevent zoom on iOS */
+            }
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/admin.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Check authentication
+            if (!AdminAuth.isAuthenticated()) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            await loadStats();
+            await loadSiteSettings();
+            loadRecentActivity();
+
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                AdminAuth.logout();
+                window.location.href = 'login.html';
+            });
+
+            // Logo upload functionality
+            document.getElementById('changeLogoBtn').addEventListener('click', () => {
+                document.getElementById('logoInput').click();
+            });
+            document.getElementById('logoInput').addEventListener('change', handleLogoUpload);
+
+            // Password change functionality
+            document.getElementById('changePasswordBtn').addEventListener('click', () => openPasswordModal());
+            document.getElementById('cancelPasswordBtn').addEventListener('click', () => closePasswordModal());
+            document.querySelector('#passwordModal .modal-close').addEventListener('click', () => closePasswordModal());
+            document.getElementById('passwordForm').addEventListener('submit', handlePasswordChange);
+
+            // WhatsApp modal functionality
+            document.getElementById('editWhatsappBtn').addEventListener('click', () => openWhatsappModal());
+            document.getElementById('cancelWhatsappBtn').addEventListener('click', () => closeWhatsappModal());
+            document.getElementById('saveWhatsappBtn').addEventListener('click', () => saveWhatsappNumber());
+
+            // WhatsApp modal events
+            document.getElementById('closeWhatsappModal').addEventListener('click', closeWhatsappModal);
+
+            // Close modal when clicking outside
+            document.getElementById('whatsappModal').addEventListener('click', (e) => {
+                if (e.target === document.getElementById('whatsappModal')) {
+                    closeWhatsappModal();
+                }
+            });
+        });
+
+        function openPasswordModal() {
+            document.getElementById('passwordForm').reset();
+            document.getElementById('passwordModal').style.display = 'flex';
+        }
+
+        function closePasswordModal() {
+            document.getElementById('passwordModal').style.display = 'none';
+        }
+
+        async function handlePasswordChange(e) {
+            e.preventDefault();
+
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // Validation
+            if (newPassword !== confirmPassword) {
+                alert('Les nouveaux mots de passe ne correspondent pas.');
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                alert('Le nouveau mot de passe doit contenir au moins 6 caractères.');
+                return;
+            }
+
+            try {
+                // First verify current password by attempting login
+                const supabase = window.supabase.createClient('https://lkpalvfpzpmpyluobkuj.supabase.co', 'sb_publishable_ILnbAx9nilkcl6376lQz-A_KsrW6eUG');
+
+                // Get current user email from session
+                const session = JSON.parse(localStorage.getItem('supabase_session'));
+                if (!session?.user?.email) {
+                    throw new Error('Session invalide');
+                }
+
+                const { error: verifyError } = await supabase.auth.signInWithPassword({
+                    email: session.user.email,
+                    password: currentPassword
+                });
+
+                if (verifyError) {
+                    alert('Mot de passe actuel incorrect.');
+                    return;
+                }
+
+                // Update password
+                const { error: updateError } = await supabase.auth.updateUser({
+                    password: newPassword
+                });
+
+                if (updateError) {
+                    alert('Erreur lors du changement de mot de passe: ' + updateError.message);
+                    return;
+                }
+
+                alert('Mot de passe changé avec succès ! Vous allez être déconnecté.');
+                AdminAuth.logout();
+                window.location.href = 'login.html';
+
+            } catch (error) {
+                console.error('Password change error:', error);
+                alert('Erreur lors du changement de mot de passe.');
+            }
+        }
+
+        async function loadStats() {
+            try {
+                const [productsRes, categoriesRes, agentsRes] = await Promise.all([
+                    fetch('/api/products'),
+                    fetch('/api/categories'),
+                    AdminAuth.authenticatedFetch('/api/admin/agents')
+                ]);
+
+                const products = await productsRes.json();
+                const categories = await categoriesRes.json();
+                const agents = await agentsRes.json();
+
+                // Update main stats
+                document.getElementById('productsCount').textContent = products.length;
+                document.getElementById('categoriesCount').textContent = categories.length;
+                document.getElementById('agentsCount').textContent = agents.length;
+
+                // Update sidebar stats
+                document.getElementById('sidebarProducts').textContent = products.length;
+
+                // Note: Stat change indicators are handled via CSS classes in HTML
+
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+
+
+        function loadRecentActivity() {
+            const activities = [
+                { action: 'Produit ajouté', icon: '📦', time: '2 minutes ago' },
+                { action: 'Agent créé', icon: '👤', time: '15 minutes ago' },
+                { action: 'Catégorie modifiée', icon: '🏷️', time: '1 heure ago' },
+                { action: 'Image uploadée', icon: '🖼️', time: '2 heures ago' },
+                { action: 'Commande reçue', icon: '📋', time: '3 heures ago' },
+                { action: 'Paiement validé', icon: '💳', time: '5 heures ago' }
+            ];
+
+            const activityList = document.getElementById('recentActivity');
+            activityList.innerHTML = activities.map(activity => `
+                <div class="activity-item">
+                    <div class="activity-content">
+                        <div class="activity-icon">${activity.icon}</div>
+                        <div class="activity-text">${activity.action}</div>
+                    </div>
+                    <div class="activity-time">${activity.time}</div>
+                </div>
+            `).join('');
+        }
+
+
+
+        async function loadSiteSettings() {
+            try {
+                // Load logo
+                const logoResponse = await AdminAuth.authenticatedFetch('/api/admin/settings/site_logo');
+                const logoData = await logoResponse.json();
+                const logoUrl = logoData.value;
+
+                const logoPreview = document.getElementById('currentLogo');
+                if (logoUrl) {
+                    logoPreview.innerHTML = `<img src="${logoUrl}" alt="Logo actuel">`;
+                } else {
+                    logoPreview.innerHTML = '<p style="color: #666; margin: 0;">Aucun logo défini</p>';
+                }
+
+                // Load WhatsApp info
+                const whatsappResponse = await AdminAuth.authenticatedFetch('/api/admin/settings/site_whatsapp');
+                const whatsappData = await whatsappResponse.json();
+                const whatsappNumber = whatsappData.value || 'Non configuré';
+
+                document.getElementById('whatsappDisplay').textContent = whatsappNumber;
+
+            } catch (error) {
+                console.error('Error loading site settings:', error);
+                document.getElementById('currentLogo').innerHTML = '<p style="color: #666; margin: 0;">Erreur de chargement</p>';
+                document.getElementById('whatsappDisplay').textContent = 'Erreur de chargement';
+            }
+        }
+
+        async function handleLogoUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                alert('Veuillez sélectionner un fichier image.');
+                return;
+            }
+
+            // Validate file size (max 5MB for logos)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Le fichier est trop volumineux. Taille maximum: 5MB.');
+                return;
+            }
+
+            const changeBtn = document.getElementById('changeLogoBtn');
+            changeBtn.disabled = true;
+            changeBtn.textContent = 'Upload en cours...';
+
+            try {
+                // Upload to Supabase
+                const formData = new FormData();
+                formData.append('file', file);
+
+                const uploadResponse = await AdminAuth.authenticatedFetch('/api/admin/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!uploadResponse.ok) {
+                    throw new Error('Upload failed');
+                }
+
+                const uploadResult = await uploadResponse.json();
+                const logoUrl = uploadResult.url;
+
+                // Save logo URL to settings
+                const settingsResponse = await AdminAuth.authenticatedFetch('/api/admin/settings/site_logo', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ value: logoUrl })
+                });
+
+                if (settingsResponse.ok) {
+                    alert('Logo mis à jour avec succès !');
+                    await loadSiteSettings(); // Reload settings
+                } else {
+                    throw new Error('Failed to save logo URL');
+                }
+
+            } catch (error) {
+                console.error('Logo upload error:', error);
+                alert('Erreur lors de l\'upload du logo: ' + error.message);
+            } finally {
+                changeBtn.disabled = false;
+                changeBtn.textContent = 'Changer le Logo';
+                // Reset file input
+                document.getElementById('logoInput').value = '';
+            }
+        }
+
+        function testWhatsApp() {
+            const testNumber = '+22501020304';
+            const testMessage = 'Test WhatsApp depuis l\'admin';
+            const whatsappUrl = `https://wa.me/${testNumber.replace(/\D/g, '')}?text=${encodeURIComponent(testMessage)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // WhatsApp modal functions
+        function openWhatsappModal() {
+            console.log('Opening WhatsApp modal...');
+
+            // Set default country to Côte d'Ivoire
+            updateSiteWhatsappFields('Côte d\'Ivoire');
+
+            // Setup country change listener
+            const countrySelect = document.getElementById('siteWhatsappCountry');
+            if (countrySelect) {
+                countrySelect.addEventListener('change', (e) => {
+                    updateSiteWhatsappFields(e.target.value);
+                });
+            } else {
+                console.error('Country select not found');
+            }
+
+            // Show modal
+            const modal = document.getElementById('whatsappModal');
+            if (modal) {
+                modal.classList.add('show');
+                console.log('Modal opened');
+            } else {
+                console.error('Modal not found');
+            }
+        }
+
+        function closeWhatsappModal() {
+            // Hide modal
+            document.getElementById('whatsappModal').classList.remove('show');
+        }
+
+
+
+        async function saveWhatsappNumber() {
+            const country = document.getElementById('siteWhatsappCountry').value;
+            const phoneCode = document.getElementById('siteWhatsappCode').value.trim();
+            const localNumber = document.getElementById('siteWhatsappNumber').value.trim();
+
+            // Validate that we have at least a local number
+            if (!localNumber) {
+                alert('Veuillez saisir un numéro de téléphone.');
+                return;
+            }
+
+            // Validate phone format based on country
+            const phoneData = getCountryPhoneData(country);
+            const fullPhoneNumber = phoneCode + localNumber;
+
+            if (!validatePhoneNumber(fullPhoneNumber, phoneData)) {
+                alert(`Le numéro de téléphone n'est pas valide pour ${country}.\nFormat attendu: ${phoneData.code} suivi de ${phoneData.length} chiffres.`);
+                return;
+            }
+
+            const saveBtn = document.getElementById('saveWhatsappBtn');
+            const originalText = saveBtn.textContent;
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Sauvegarde...';
+
+            try {
+                const response = await AdminAuth.authenticatedFetch('/api/admin/settings/site_whatsapp', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ value: fullPhoneNumber })
+                });
+
+                if (response.ok) {
+                    alert('Numéro WhatsApp mis à jour avec succès !');
+                    // Reload site settings to update display
+                    await loadSiteSettings();
+                    closeWhatsappModal();
+                } else {
+                    throw new Error('Erreur lors de la sauvegarde');
+                }
+
+            } catch (error) {
+                console.error('Error saving WhatsApp number:', error);
+                alert('Erreur lors de la sauvegarde du numéro WhatsApp: ' + error.message);
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = originalText;
+            }
+        }
+
+        function updateSiteWhatsappFields(country) {
+            const phoneData = getCountryPhoneData(country);
+            const phoneCodeInput = document.getElementById('siteWhatsappCode');
+            const phoneInput = document.getElementById('siteWhatsappNumber');
+            const phoneHelp = document.getElementById('siteWhatsappHelp');
+
+            if (phoneCodeInput && phoneInput && phoneHelp) {
+                phoneCodeInput.value = phoneData.code;
+                phoneInput.placeholder = phoneData.example;
+                phoneInput.maxLength = phoneData.length;
+                phoneInput.value = ''; // Clear current value when country changes
+                phoneHelp.textContent = `Exemple: ${phoneData.example} (${phoneData.length} chiffres)`;
+            }
+        }
+
+        // Phone number utilities (same as checkout.js)
+        const countryPhoneData = {
+            'Côte d\'Ivoire': { code: '+225', length: 10, example: '0102030405' },
+            'Sénégal': { code: '+221', length: 9, example: '701234567' },
+            'Mali': { code: '+223', length: 8, example: '12345678' },
+            'Burkina Faso': { code: '+226', length: 8, example: '12345678' },
+            'Niger': { code: '+227', length: 8, example: '12345678' },
+            'Togo': { code: '+228', length: 8, example: '12345678' },
+            'Bénin': { code: '+229', length: 8, example: '12345678' },
+            'Ghana': { code: '+233', length: 9, example: '123456789' },
+            'Guinée': { code: '+224', length: 9, example: '123456789' },
+            'France': { code: '+33', length: 9, example: '123456789' },
+            'USA': { code: '+1', length: 10, example: '2125551234' },
+            'Canada': { code: '+1', length: 10, example: '4165551234' },
+            'Royaume-Uni': { code: '+44', length: 10, example: '07123456789' }
+        };
+
+        function getCountryPhoneData(country) {
+            return countryPhoneData[country] || { code: '+225', length: 10, example: '0102030405' };
+        }
+
+        function validatePhoneNumber(phoneNumber, phoneData) {
+            // Check if phone starts with correct country code
+            if (!phoneNumber.startsWith(phoneData.code)) {
+                return false;
+            }
+
+            // Remove country code and check remaining digits
+            const localNumber = phoneNumber.substring(phoneData.code.length);
+
+            // Check if local number has correct length and contains only digits
+            return localNumber.length === phoneData.length && /^\d+$/.test(localNumber);
+        }
+    </script>
+</body>
+</html>

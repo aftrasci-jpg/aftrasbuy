@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test PWA - AFTRAS-Buy</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#F28C28">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="back-link">
+                <span class="back-icon">←</span>
+                Retour à AFTRAS-Buy
+            </a>
+            <div class="site-title">
+                <h1>Test PWA</h1>
+                <p>Fonctionnalités de l'application</p>
+            </div>
+        </div>
+    </header>
+
+    <main style="max-width: 800px; margin: 2rem auto; padding: 0 2rem;">
+        <div style="background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+            <h2 style="color: #004D40; margin-bottom: 2rem; text-align: center;">🔧 Test des Fonctionnalités PWA</h2>
+
+            <div id="pwaStatus" style="margin-bottom: 2rem;">
+                <h3>📊 Statut PWA</h3>
+                <div id="statusContainer"></div>
+            </div>
+
+            <div id="installSection" style="margin-bottom: 2rem;">
+                <h3>📱 Installation</h3>
+                <p>L'app peut être installée sur les appareils mobiles et ordinateurs.</p>
+                <div id="installStatus"></div>
+            </div>
+
+            <div id="cacheSection" style="margin-bottom: 2rem;">
+                <h3>💾 Cache</h3>
+                <button onclick="testCache()" style="background: #F28C28; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; margin-right: 10px;">Tester le Cache</button>
+                <button onclick="clearCache()" style="background: #004D40; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer;">Vider le Cache</button>
+                <div id="cacheResult" style="margin-top: 10px;"></div>
+            </div>
+
+            <div id="notificationSection" style="margin-bottom: 2rem;">
+                <h3>🔔 Notifications</h3>
+                <button onclick="testNotification()" style="background: #F28C28; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; margin-right: 10px;">Tester Notification</button>
+                <button onclick="requestNotificationPermission()" style="background: #004D40; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer;">Demander Permission</button>
+                <div id="notificationResult" style="margin-top: 10px;"></div>
+            </div>
+
+            <div id="offlineSection">
+                <h3>📶 Mode Hors Ligne</h3>
+                <p>Coupez votre connexion internet et actualisez la page pour tester le mode hors ligne.</p>
+                <div id="offlineStatus"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Test PWA functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            checkPWAStatus();
+            checkInstallStatus();
+            checkOfflineStatus();
+        });
+
+        function checkPWAStatus() {
+            const statusContainer = document.getElementById('statusContainer');
+            let status = '';
+
+            // Check Service Worker
+            if ('serviceWorker' in navigator) {
+                status += '<p>✅ Service Worker: Supporté</p>';
+                navigator.serviceWorker.getRegistrations().then(registrations => {
+                    if (registrations.length > 0) {
+                        status += '<p>✅ Service Worker: Enregistré</p>';
+                    } else {
+                        status += '<p>❌ Service Worker: Non enregistré</p>';
+                    }
+                });
+            } else {
+                status += '<p>❌ Service Worker: Non supporté</p>';
+            }
+
+            // Check Manifest
+            if ('manifest' in document.createElement('link')) {
+                status += '<p>✅ Manifest: Supporté</p>';
+            } else {
+                status += '<p>❌ Manifest: Non supporté</p>';
+            }
+
+            // Check Web App
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                status += '<p>✅ Mode Application: Activé</p>';
+            } else {
+                status += '<p>ℹ️ Mode Application: Navigateur standard</p>';
+            }
+
+            statusContainer.innerHTML = status;
+        }
+
+        function checkInstallStatus() {
+            const installStatus = document.getElementById('installStatus');
+
+            if ('beforeinstallprompt' in window) {
+                installStatus.innerHTML = '<p>✅ Installation: Disponible (bouton d\'installation apparaîtra)</p>';
+            } else if (window.matchMedia('(display-mode: standalone)').matches) {
+                installStatus.innerHTML = '<p>✅ Installation: App déjà installée</p>';
+            } else {
+                installStatus.innerHTML = '<p>❌ Installation: Non disponible sur ce navigateur</p>';
+            }
+        }
+
+        function checkOfflineStatus() {
+            const offlineStatus = document.getElementById('offlineStatus');
+
+            if (!navigator.onLine) {
+                offlineStatus.innerHTML = '<p style="color: #F28C28;">📶 Vous êtes actuellement hors ligne. L\'app devrait fonctionner normalement.</p>';
+            } else {
+                offlineStatus.innerHTML = '<p>🌐 Vous êtes en ligne. Coupez votre connexion pour tester le mode hors ligne.</p>';
+            }
+
+            window.addEventListener('online', () => {
+                offlineStatus.innerHTML = '<p>🌐 Connexion rétablie</p>';
+            });
+
+            window.addEventListener('offline', () => {
+                offlineStatus.innerHTML = '<p style="color: #F28C28;">📶 Passé hors ligne - testez la navigation</p>';
+            });
+        }
+
+        async function testCache() {
+            const cacheResult = document.getElementById('cacheResult');
+
+            try {
+                const cacheNames = await caches.keys();
+                cacheResult.innerHTML = `<p>✅ Caches trouvés: ${cacheNames.join(', ')}</p>`;
+
+                // Test cache retrieval
+                const response = await caches.match('/');
+                if (response) {
+                    cacheResult.innerHTML += '<p>✅ Page d\'accueil trouvée dans le cache</p>';
+                } else {
+                    cacheResult.innerHTML += '<p>⚠️ Page d\'accueil non trouvée dans le cache</p>';
+                }
+            } catch (error) {
+                cacheResult.innerHTML = '<p>❌ Erreur lors du test du cache</p>';
+            }
+        }
+
+        async function clearCache() {
+            const cacheResult = document.getElementById('cacheResult');
+
+            try {
+                const cacheNames = await caches.keys();
+                await Promise.all(
+                    cacheNames.map(cacheName => caches.delete(cacheName))
+                );
+                cacheResult.innerHTML = '<p>✅ Cache vidé avec succès</p>';
+            } catch (error) {
+                cacheResult.innerHTML = '<p>❌ Erreur lors du vidage du cache</p>';
+            }
+        }
+
+        function testNotification() {
+            const notificationResult = document.getElementById('notificationResult');
+
+            if ('Notification' in window) {
+                if (Notification.permission === 'granted') {
+                    new Notification('Test AFTRAS-Buy', {
+                        body: 'Ceci est une notification de test !',
+                        icon: '/icon.svg',
+                        badge: '/icon.svg'
+                    });
+                    notificationResult.innerHTML = '<p>✅ Notification envoyée</p>';
+                } else {
+                    notificationResult.innerHTML = '<p>⚠️ Permission de notification requise</p>';
+                }
+            } else {
+                notificationResult.innerHTML = '<p>❌ Notifications non supportées</p>';
+            }
+        }
+
+        async function requestNotificationPermission() {
+            const notificationResult = document.getElementById('notificationResult');
+
+            if ('Notification' in window) {
+                const permission = await Notification.requestPermission();
+                if (permission === 'granted') {
+                    notificationResult.innerHTML = '<p>✅ Permission accordée</p>';
+                } else {
+                    notificationResult.innerHTML = '<p>❌ Permission refusée</p>';
+                }
+            } else {
+                notificationResult.innerHTML = '<p>❌ Notifications non supportées</p>';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AFTRAS-Buy - Panier</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#F28C28">
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <div class="site-branding">
+                <div id="siteLogo" class="site-logo">
+                    <!-- Logo will be loaded here -->
+                </div>
+                <div class="site-title">
+                    <h1>AFTRAS-Buy</h1>
+                    <p>🛒 Votre Panier</p>
+                </div>
+            </div>
+        </div>
+        <div class="header-right">
+            <a href="index.html" class="back-link">
+                <span class="back-icon">←</span>
+                Retour au catalogue
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <div class="cart-layout">
+            <!-- Cart Items -->
+            <div class="cart-items-section">
+                <div id="cartContainer" class="cart-items">
+                    <!-- Cart items will be loaded here -->
+                </div>
+
+                <div id="emptyCart" class="empty-cart">
+                    <div class="empty-cart-content">
+                        <div class="empty-cart-icon">🛒</div>
+                        <h3>Votre panier est vide</h3>
+                        <p>Découvrez nos produits et commencez vos achats !</p>
+                        <a href="index.html" class="btn-primary">🛍️ Continuer les achats</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cart Summary -->
+            <div id="cartSummary" class="cart-summary">
+                <!-- Total will be shown here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Checkout Modal -->
+    <div id="checkoutModal" class="modal">
+        <div class="modal-content checkout-modal">
+            <div class="modal-header">
+                <h3>📋 Finaliser votre commande</h3>
+                <span class="modal-close">&times;</span>
+            </div>
+
+            <form id="checkoutForm">
+                <div class="checkout-form">
+                    <div class="form-section">
+                        <h4>Informations de livraison</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="customerFirstName">Prénom *</label>
+                                <input type="text" id="customerFirstName" required placeholder="Votre prénom">
+                            </div>
+                            <div class="form-group">
+                                <label for="customerLastName">Nom *</label>
+                                <input type="text" id="customerLastName" required placeholder="Votre nom">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="customerCountry">Pays *</label>
+                                <select id="customerCountry" required>
+                                    <option value="Côte d'Ivoire">🇨🇮 Côte d'Ivoire (+225)</option>
+                                    <option value="Sénégal">🇸🇳 Sénégal (+221)</option>
+                                    <option value="Mali">🇲🇱 Mali (+223)</option>
+                                    <option value="Burkina Faso">🇧🇫 Burkina Faso (+226)</option>
+                                    <option value="Niger">🇳🇪 Niger (+227)</option>
+                                    <option value="Togo">🇹🇬 Togo (+228)</option>
+                                    <option value="Bénin">🇧🇯 Bénin (+229)</option>
+                                    <option value="Ghana">🇬🇭 Ghana (+233)</option>
+                                    <option value="Guinée">🇬🇳 Guinée (+224)</option>
+                                    <option value="France">🇫🇷 France (+33)</option>
+                                    <option value="USA">🇺🇸 États-Unis (+1)</option>
+                                    <option value="Canada">🇨🇦 Canada (+1)</option>
+                                    <option value="Royaume-Uni">🇬🇧 Royaume-Uni (+44)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="customerPhoneCode">Indicatif</label>
+                                <input type="text" id="customerPhoneCode" readonly placeholder="+225" style="background: #f8f9fa; cursor: not-allowed;">
+                            </div>
+                            <div class="form-group">
+                                <label for="customerPhone">Numéro local *</label>
+                                <input type="tel" id="customerPhone" required placeholder="0102030405" maxlength="10">
+                                <small id="phoneHelp" style="color: #666; font-size: 0.8rem;">Exemple: 0102030405 (10 chiffres)</small>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="customerCity">Ville *</label>
+                                <input type="text" id="customerCity" required placeholder="Votre ville">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkout-actions">
+                    <button type="button" id="cancelCheckoutBtn" class="btn-secondary">Annuler</button>
+                    <button type="submit" id="submitOrderBtn" class="btn-primary">📱 Envoyer la commande</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal" style="display: none;">
+        <div class="modal-content delete-modal">
+            <div class="modal-header">
+                <h3>🗑️ Confirmer la suppression</h3>
+                <span class="modal-close">&times;</span>
+            </div>
+
+            <div class="delete-content">
+                <div class="delete-icon">⚠️</div>
+                <p class="delete-message">
+                    Êtes-vous sûr de vouloir supprimer cet article de votre panier ?
+                </p>
+                <div class="delete-product-info">
+                    <img id="deleteProductImage" src="" alt="Produit" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+                    <div class="delete-product-details">
+                        <h4 id="deleteProductName"></h4>
+                        <p id="deleteProductPrice"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="delete-actions">
+                <button type="button" id="cancelDeleteBtn" class="btn-secondary">Annuler</button>
+                <button type="button" id="confirmDeleteBtn" class="btn-danger">Supprimer</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Cart page specific styles */
+        .cart-layout {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+            margin: 2rem auto;
+            max-width: 1200px;
+            padding: 0 2rem;
+        }
+
+        .cart-items-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .cart-items {
+            padding: 0;
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 1.5rem;
+            padding: 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            align-items: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .cart-item img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #333333;
+            margin-bottom: 0.5rem;
+        }
+
+        .cart-item-price {
+            color: #F28C28;
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+
+        .cart-item-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .cart-item-controls button {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #6EC6E9;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cart-item-controls button:hover {
+            background: #2F7BC1;
+            color: white;
+            border-color: #2F7BC1;
+        }
+
+        .cart-item-controls input {
+            width: 60px;
+            padding: 0.5rem;
+            border: 1px solid #6EC6E9;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .cart-summary {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            padding: 2rem;
+            height: fit-content;
+            position: sticky;
+            top: 2rem;
+        }
+
+        .cart-summary h3 {
+            margin: 0 0 1.5rem 0;
+            color: #333333;
+            font-size: 1.4rem;
+            font-weight: 800;
+        }
+
+        .checkout-btn {
+            display: block;
+            width: 100%;
+            padding: 1.25rem;
+            background: linear-gradient(135deg, #F28C28 0%, #E67E22 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 2rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(242, 140, 40, 0.3);
+        }
+
+        .checkout-btn:hover {
+            background: linear-gradient(135deg, #E67E22 0%, #D4601A 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(242, 140, 40, 0.4);
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .empty-cart-content {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .empty-cart-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.6;
+        }
+
+        .empty-cart h3 {
+            color: #0B4DA2;
+            margin-bottom: 1rem;
+        }
+
+        .empty-cart p {
+            color: #0B4DA2;
+            margin-bottom: 2rem;
+        }
+
+        .back-link {
+            color: #F28C28;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 25px;
+            border: 2px solid #F28C28;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(242, 140, 40, 0.2);
+        }
+
+        .back-link:hover {
+            background: #F28C28;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(242, 140, 40, 0.3);
+        }
+
+        .back-icon {
+            font-size: 1.2rem;
+        }
+
+        /* Checkout Modal Styles */
+        .checkout-modal {
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .checkout-modal .modal-header {
+            background: linear-gradient(135deg, #004D40 0%, #F28C28 100%);
+            color: white;
+            margin: 0;
+            padding: 2rem;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .checkout-modal .modal-header h3 {
+            color: white;
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .checkout-modal .modal-close {
+            color: white;
+            font-size: 2.5rem;
+        }
+
+        .checkout-modal .modal-close:hover {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-section h4 {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .form-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #495057;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #F28C28;
+            background: white;
+        }
+
+        .checkout-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid #A7DDF4;
+        }
+
+        .btn-primary, .btn-secondary {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2F7BC1 0%, #0B4DA2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(47, 123, 193, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(47, 123, 193, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6EC6E9;
+            color: #0B4DA2;
+            border: 2px solid #A7DDF4;
+        }
+
+        .btn-secondary:hover {
+            background: #A7DDF4;
+        }
+
+        /* Modal General Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal.show {
+            display: flex;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Delete Modal Styles */
+        .delete-modal {
+            max-width: 450px;
+            width: 90%;
+        }
+
+        .delete-modal .modal-header {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            margin: 0;
+            padding: 2rem;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .delete-modal .modal-header h3 {
+            color: white;
+            margin: 0;
+            font-size: 1.4rem;
+        }
+
+        .delete-modal .modal-close {
+            color: white;
+            font-size: 2rem;
+        }
+
+        .delete-modal .modal-close:hover {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .delete-content {
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .delete-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .delete-message {
+            color: #0B4DA2;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+
+        .delete-product-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: #6EC6E9;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .delete-product-details h4 {
+            margin: 0 0 0.5rem 0;
+            color: #0B4DA2;
+            font-size: 1.1rem;
+        }
+
+        .delete-product-details p {
+            margin: 0;
+            color: #2F7BC1;
+            font-weight: 600;
+        }
+
+        .delete-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            padding-top: 1.5rem;
+            border-top: 2px solid #A7DDF4;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .cart-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .cart-summary {
+                position: static;
+            }
+
+            header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+                padding: 1rem;
+            }
+
+            .header-left, .header-right {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .checkout-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+
+    <script src="js/api.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/checkout.js"></script>
+</body>
+</html>

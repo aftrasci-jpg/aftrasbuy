@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AFTRAS-Buy - Catalogue Produits</title>
+    <link rel="stylesheet" href="css/style.css?v=2.1">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#F28C28">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+</head>
+<body>
+<header>
+    <div class="header-left">
+        <div class="site-branding">
+            <div id="siteLogo" class="site-logo">
+                <!-- Logo will be loaded here -->
+            </div>
+            <div class="site-title">
+                <h1>AFTRAS-Buy</h1>
+                <p>Catalogue Produits</p>
+            </div>
+        </div>
+    </div>
+        <div class="header-right">
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Rechercher produits ou catégories...">
+                <button id="searchBtn">Rechercher</button>
+            </div>
+            <div class="cart-icon">
+                <span id="cartCount">0</span>
+                <a href="cart.html">Panier</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Carousel -->
+    <div id="heroCarousel" class="hero-carousel">
+        <div id="carouselSlides" class="carousel-slides">
+            <!-- Slides will be loaded here -->
+        </div>
+        <button class="carousel-prev" onclick="prevSlide()">❮</button>
+        <button class="carousel-next" onclick="nextSlide()">❯</button>
+        <div id="carouselIndicators" class="carousel-indicators">
+            <!-- Indicators will be loaded here -->
+        </div>
+    </div>
+
+    <main>
+        <div class="filters">
+            <select id="categoryFilter">
+                <option value="">Toutes les catégories</option>
+            </select>
+        </div>
+
+        <div id="productsContainer" class="products-grid">
+            <!-- Products will be loaded here -->
+        </div>
+
+        <div id="loading" class="loading">Chargement...</div>
+        <div id="noResults" class="no-results" style="display: none;">Aucun produit trouvé.</div>
+    </main>
+
+
+
+    <script src="js/api.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
