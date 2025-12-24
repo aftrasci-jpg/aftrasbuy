@@ -140,42 +140,7 @@
                 </div>
             </section>
 
-            <!-- Site Settings -->
-            <section class="site-settings">
-                <div class="section-header">
-                    <h2>⚙️ Paramètres du Site</h2>
-                    <span class="section-subtitle">Configuration et personnalisation</span>
-                </div>
-                <div class="settings-grid">
-                    <div class="setting-card">
-                        <h3><span>🎨</span> Logo du Site</h3>
-                        <div id="currentLogo" class="logo-preview">
-                            <!-- Logo actuel sera chargé ici -->
-                        </div>
-                        <button id="changeLogoBtn" class="btn-primary">
-                            <span>📤</span>
-                            Changer le Logo
-                        </button>
-                        <input type="file" id="logoInput" accept="image/*" style="display: none;">
-                    </div>
-                    <div class="setting-card">
-                        <h3><span>📱</span> Numéro WhatsApp du Site</h3>
-                        <div class="whatsapp-info">
-                            <div class="info-item">
-                                <strong>Numéro actuel:</strong>
-                                <span id="whatsappDisplay">Chargement...</span>
-                            </div>
-                            <div class="info-item">
-                                <strong>Statut:</strong> <span class="status-active">✅ Actif</span>
-                            </div>
-                        </div>
-                        <button id="editWhatsappBtn" class="btn-primary" style="margin-top: 1rem;">
-                            <span>✏️</span>
-                            Modifier le numéro
-                        </button>
-                    </div>
-                </div>
-            </section>
+
 
             <!-- Recent Activity -->
             <section class="recent-activity">
@@ -909,6 +874,26 @@
         .action-card:nth-child(3) { animation-delay: 0.2s; }
         .action-card:nth-child(4) { animation-delay: 0.3s; }
 
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
         /* Modal Improvements */
         .modal-content {
             background: var(--card-bg);
@@ -1044,11 +1029,17 @@
     <script src="../js/admin.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            // Check authentication
-            if (!AdminAuth.isAuthenticated()) {
+            // Check authentication (temporarily disabled for debugging)
+            console.log('Checking authentication...');
+            const isAuth = AdminAuth.isAuthenticated();
+            console.log('Is authenticated:', isAuth);
+
+            if (!isAuth) {
+                console.log('Not authenticated, redirecting to login');
                 window.location.href = 'login.html';
                 return;
             }
+            console.log('Authentication successful, loading dashboard');
 
             await loadStats();
             await loadSiteSettings();
@@ -1327,9 +1318,12 @@
             const modal = document.getElementById('whatsappModal');
             if (modal) {
                 modal.classList.add('show');
-                console.log('Modal opened');
+                console.log('Modal opened successfully');
+                // Also set display as fallback
+                modal.style.display = 'flex';
             } else {
                 console.error('Modal not found');
+                alert('Erreur: Modal non trouvée');
             }
         }
 
@@ -1385,6 +1379,15 @@
 
             } catch (error) {
                 console.error('Error saving WhatsApp number:', error);
+
+                // Check if session expired
+                if (error.message.includes('Session expired') || error.message.includes('Not authenticated')) {
+                    alert('Votre session a expiré. Vous allez être redirigé vers la page de connexion.');
+                    AdminAuth.logout();
+                    window.location.href = 'login.html';
+                    return;
+                }
+
                 alert('Erreur lors de la sauvegarde du numéro WhatsApp: ' + error.message);
             } finally {
                 saveBtn.disabled = false;

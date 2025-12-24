@@ -1,7 +1,7 @@
 {
-  "name": "AFTRAS-Buy",
-  "short_name": "AFTRAS-Buy",
-  "description": "Catalogue Produits AFTRAS-Buy",
+  "name": "Aftras Store",
+  "short_name": "Aftras Store",
+  "description": "Catalogue Produits Aftras Store",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#FFFFFF",

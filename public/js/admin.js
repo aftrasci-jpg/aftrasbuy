@@ -16,20 +16,42 @@ class AdminAuth {
 
     static isAuthenticated() {
         const session = localStorage.getItem('supabase_session');
-        if (!session) return false;
+        if (!session) {
+            console.log('No session found in localStorage');
+            return false;
+        }
 
         try {
             const sessionData = JSON.parse(session);
-            const now = Math.floor(Date.now() / 1000);
+            console.log('Session data:', {
+                hasAccessToken: !!sessionData.access_token,
+                expiresAt: sessionData.expires_at,
+                currentTime: Math.floor(Date.now() / 1000)
+            });
 
-            // Check if token is expired
-            if (sessionData.expires_at && sessionData.expires_at < now) {
+            // Check if we have a valid access token
+            if (!sessionData.access_token) {
+                console.log('No access token found');
                 this.logout();
                 return false;
             }
 
+            // Check if token is expired (with some buffer time)
+            const now = Math.floor(Date.now() / 1000);
+            if (sessionData.expires_at && sessionData.expires_at < (now + 60)) { // 60 seconds buffer
+                console.log('Session expired or expiring soon:', {
+                    expiresAt: sessionData.expires_at,
+                    currentTime: now,
+                    difference: sessionData.expires_at - now
+                });
+                this.logout();
+                return false;
+            }
+
+            console.log('Session is valid');
             return true;
         } catch (e) {
+            console.error('Error parsing session:', e);
             this.logout();
             return false;
         }
