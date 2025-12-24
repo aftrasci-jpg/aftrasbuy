@@ -67,7 +67,7 @@ FOR SELECT USING (is_active = true);
 
 -- Admin can manage products (authenticated users assumed to be admin)
 CREATE POLICY "Admin manage products" ON products
-FOR ALL USING (auth.role() = 'authenticated');
+FOR ALL USING (auth.jwt() IS NOT NULL);
 
 -- RLS Policies for categories
 -- Public can read categories
@@ -76,17 +76,17 @@ FOR SELECT USING (true);
 
 -- Admin can manage categories
 CREATE POLICY "Admin manage categories" ON categories
-FOR ALL USING (auth.role() = 'authenticated');
+FOR ALL USING (auth.jwt() IS NOT NULL);
 
 -- RLS Policies for agents
 -- Public cannot access agents (only admin)
 CREATE POLICY "Admin manage agents" ON agents
-FOR ALL USING (auth.role() = 'authenticated');
+FOR ALL USING (auth.jwt() IS NOT NULL);
 
 -- RLS Policies for settings
 -- Only admin can manage settings
 CREATE POLICY "Admin manage settings" ON settings
-FOR ALL USING (auth.role() = 'authenticated');
+FOR ALL USING (auth.jwt() IS NOT NULL);
 
 -- RLS Policies for carousel_images
 -- Public can read active carousel images
@@ -95,7 +95,7 @@ FOR SELECT USING (is_active = true);
 
 -- Admin can manage carousel images
 CREATE POLICY "Admin manage carousel_images" ON carousel_images
-FOR ALL USING (auth.role() = 'authenticated');
+FOR ALL USING (auth.jwt() IS NOT NULL);
 
 -- Create storage bucket 'catalogue' (run in Supabase SQL Editor or via API)
 -- Note: Bucket creation might need to be done via dashboard or API, but policies can be set after.
@@ -107,4 +107,4 @@ FOR SELECT USING (bucket_id = 'catalogue');
 
 -- Admin write (authenticated users)
 CREATE POLICY "Admin manage catalogue" ON storage.objects
-FOR ALL USING (bucket_id = 'catalogue' AND auth.role() = 'authenticated');
+FOR ALL USING (bucket_id = 'catalogue' AND auth.jwt() IS NOT NULL);
