@@ -110,6 +110,38 @@
                 </div>
             </section>
 
+            <!-- Site Settings -->
+            <section class="site-settings">
+                <div class="section-header">
+                    <h2>⚙️ Paramètres du site</h2>
+                    <span class="section-subtitle">Configuration générale du site</span>
+                </div>
+                <div class="settings-grid">
+                    <div class="setting-card">
+                        <h3>🏢 Logo du site</h3>
+                        <div id="currentLogo" class="logo-preview">
+                            <p style="color: #666; margin: 0;">Chargement...</p>
+                        </div>
+                        <input type="file" id="logoInput" accept="image/*" style="display: none;">
+                        <button id="changeLogoBtn" class="btn-primary" style="margin-top: 1rem;">
+                            <span>📤</span>
+                            Changer le Logo
+                        </button>
+                    </div>
+                    <div class="setting-card">
+                        <h3>📱 WhatsApp du site</h3>
+                        <div style="padding: 1rem; background: #f8f9fa; border-radius: 8px; margin-bottom: 1rem;">
+                            <strong>Numéro actuel:</strong><br>
+                            <span id="whatsappDisplay" style="color: #004D40; font-weight: 600;">Chargement...</span>
+                        </div>
+                        <button id="editWhatsappBtn" class="btn-primary">
+                            <span>📱</span>
+                            Modifier WhatsApp
+                        </button>
+                    </div>
+                </div>
+            </section>
+
             <!-- Quick Actions -->
             <section class="quick-actions">
                 <div class="section-header">
