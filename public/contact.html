@@ -84,9 +84,9 @@
                     <div class="support-item">
                         <h3>📱 Contact Support</h3>
                         <p>Pour toute question, assistance ou suivi de commande :</p>
-                        <a href="https://wa.me/22507080910?text=Bonjour, j'ai besoin d'aide" class="whatsapp-btn" target="_blank">
-                            <span>💬 Contacter le Support WhatsApp</span>
-                        </a>
+        <a href="#" id="whatsappSupportLink" class="whatsapp-btn" target="_blank">
+            <span>💬 Contacter le Support WhatsApp</span>
+        </a>
                         <p class="support-note">Notre équipe vous répond en moins de 2h !</p>
                     </div>
 
@@ -646,5 +646,46 @@
             }
         }
     </style>
+
+    <script>
+        // API functions for contact page
+        const API_BASE = window.location.origin;
+
+        async function getSiteWhatsapp() {
+            try {
+                const response = await fetch(`${API_BASE}/api/settings/site_whatsapp`);
+                if (!response.ok) throw new Error('Site WhatsApp not configured');
+                const data = await response.json();
+                return data.value;
+            } catch (error) {
+                console.error('Error fetching site WhatsApp:', error);
+                // Fallback to default number
+                return '+22507080910';
+            }
+        }
+
+        async function updateWhatsappLink() {
+            try {
+                const whatsappNumber = await getSiteWhatsapp();
+                const whatsappLink = document.getElementById('whatsappSupportLink');
+
+                if (whatsappLink && whatsappNumber) {
+                    const message = encodeURIComponent('Bonjour, j\'ai besoin d\'aide');
+                    whatsappLink.href = `https://wa.me/${whatsappNumber.replace(/\D/g, '')}?text=${message}`;
+                    console.log('WhatsApp link updated with number:', whatsappNumber);
+                }
+            } catch (error) {
+                console.error('Error updating WhatsApp link:', error);
+                // Fallback
+                const whatsappLink = document.getElementById('whatsappSupportLink');
+                if (whatsappLink) {
+                    whatsappLink.href = 'https://wa.me/22507080910?text=Bonjour%2C%20j%27ai%20besoin%20d%27aide';
+                }
+            }
+        }
+
+        // Update WhatsApp link when page loads
+        document.addEventListener('DOMContentLoaded', updateWhatsappLink);
+    </script>
 </body>
 </html>
