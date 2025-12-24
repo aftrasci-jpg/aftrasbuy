@@ -16,7 +16,6 @@ const authenticateAdmin = async (req, res, next) => {
 
   const token = req.headers.authorization?.split(' ')[1];
   console.log('Extracted token:', token ? token.substring(0, 50) + '...' : 'null');
-  console.log('Token length:', token ? token.length : 0);
 
   if (!token) {
     console.log('No token provided in request');
@@ -24,8 +23,17 @@ const authenticateAdmin = async (req, res, next) => {
   }
 
   try {
-    // For now, just check if token exists - remove length check
-    console.log('Token validation passed, proceeding...');
+    // Validate the JWT token with Supabase
+    console.log('Validating token with Supabase...');
+    const { data: { user }, error } = await supabase.auth.getUser(token);
+
+    if (error || !user) {
+      console.log('Token validation failed:', error?.message);
+      return res.status(401).json({ error: 'Invalid token' });
+    }
+
+    console.log('Token validation passed for user:', user.email);
+    req.user = user; // Store user info for later use
     req.token = token; // Store token for potential future use
     next();
   } catch (err) {
